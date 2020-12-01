@@ -18,32 +18,8 @@ namespace First
         Screenshot image;
         WebDriverWait wait;
 
-        /*public void delete(string[] files)
-        {
-            int i = 3;
-            foreach (string file in files)
-            {
-                if (i == 0)
-                {
-                    FileInfo fi = new FileInfo(file);
-                    fi.Delete();
-                }
-                i--;
-            }
-        }
-        public void clear()
-        {
-            string[] files = Directory.GetFiles("../../temp");
-            string[] files1 = Directory.GetFiles("../../temp/html");
-            Console.Write(files);
-            Console.Write(files1);
-            delete(files);
-            delete(files1);
-        }*/
-
         public void BeforeTest(string[] args)
         {
-            //clear();
             //через параметры задается логин и пароль, без параметров запускается стандартный
             login = "arthura635@yahoo.com";
             pass = "21SDF4535146";
