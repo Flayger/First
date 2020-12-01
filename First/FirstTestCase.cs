@@ -130,7 +130,7 @@ namespace First
             //адрес письма
             wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("//*[@id='message-to-field']")));
             ele = driver.FindElement(By.XPath("//*[@id='message-to-field']"));
-            ele.SendKeys("Flayger@yandex.ru");
+            ele.SendKeys("chepurovova@yandex.ru");
 
             //название письма
             ele = driver.FindElement(By.XPath("//*[@id='mail-app-component']/div/div/div[1]/div[3]/div/div/input"));
