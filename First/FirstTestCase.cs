@@ -140,7 +140,7 @@ namespace First
             ele = driver.FindElement(By.XPath("//*[@id='editor-container']/div[1]"));
             string text = "Привет, Вова! Надеюсь, у тебя будет свободное время и желание проверить мою работу, Спасибо!" +
             "запуск через командную строку - переходим в каталог с экзешником, "
-            +"'c:\Users\Flayger\Documents\Visual Studio 2015\Projects\First\First\bin\Debug\First.exe' -login=arthura635@yahoo.com -pass=21SDF4535146";
+            +"@'c:/Users/Flayger/Documents/Visual Studio 2015/Projects/First/First/bin/Debug/First.exe' -login=arthura635@yahoo.com -pass=21SDF4535146";
             ele.SendKeys(text);
 
             text = "Тест(от англ.test «испытание, проверка») или испытание" +
