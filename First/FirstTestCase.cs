@@ -177,6 +177,8 @@ namespace First
             ele.SendKeys(OpenQA.Selenium.Keys.Enter);
             ele.SendKeys("от меня, Фёдорова Артёма");
 
+            //подождать загрузки файла
+            wait.Until(ExpectedConditions.ElementIsVisible(By.XPath("//*[@title='text.docx']")));
             //отправить
             ele = driver.FindElement(By.CssSelector("#mail-app-component > div.p_a.R_0.T_0.L_0.B_0.D_F > div > div.em_N.D_F.ek_BB.p_R.o_h > div:nth-child(2) > div > button"));
             ele.Click();
