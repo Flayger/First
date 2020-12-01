@@ -130,7 +130,7 @@ namespace First
             //адрес письма
             wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("//*[@id='message-to-field']")));
             ele = driver.FindElement(By.XPath("//*[@id='message-to-field']"));
-            ele.SendKeys("Flayger@yandex.ru");
+            ele.SendKeys("chepurovova@yandex.ru");
 
             //название письма
             ele = driver.FindElement(By.XPath("//*[@id='mail-app-component']/div/div/div[1]/div[3]/div/div/input"));
@@ -140,7 +140,7 @@ namespace First
             ele = driver.FindElement(By.XPath("//*[@id='editor-container']/div[1]"));
             string text = "Привет, Вова! Надеюсь, у тебя будет свободное время и желание проверить мою работу, Спасибо!" +
             "запуск через командную строку - переходим в каталог с экзешником, "
-            +"'c:\Users\Flayger\Documents\Visual Studio 2015\Projects\First\First\bin\Debug\First.exe' -login=arthura635@yahoo.com -pass=21SDF4535146";
+            +"@'c:/Users/Flayger/Documents/Visual Studio 2015/Projects/First/First/bin/Debug/First.exe' -login=arthura635@yahoo.com -pass=21SDF4535146";
             ele.SendKeys(text);
 
             text = "Тест(от англ.test «испытание, проверка») или испытание" +
@@ -177,6 +177,8 @@ namespace First
             ele.SendKeys(OpenQA.Selenium.Keys.Enter);
             ele.SendKeys("от меня, Фёдорова Артёма");
 
+            //подождать загрузки файла
+            wait.Until(ExpectedConditions.ElementIsVisible(By.XPath("//*[@title='text.docx']")));
             //отправить
             ele = driver.FindElement(By.CssSelector("#mail-app-component > div.p_a.R_0.T_0.L_0.B_0.D_F > div > div.em_N.D_F.ek_BB.p_R.o_h > div:nth-child(2) > div > button"));
             ele.Click();
