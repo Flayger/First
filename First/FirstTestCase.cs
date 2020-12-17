@@ -21,27 +21,34 @@ namespace First
         public void BeforeTest(string[] args)
         {
             //через параметры задается логин и пароль, без параметров запускается стандартный
-            login = "arthura635@yahoo.com";
-            pass = "21SDF4535146";
-            for (int i = 0; i < args.Length; i++)
+            if(args!=null)
             {
                 login = null;
                 pass = null;
-                string[] keys = new string[] { "-login=", "-pass=" };
+            }
+            login = "arthura635@yahoo.com";
+            pass = "21SDF4535146";
 
-                string sKeyResult = keys.FirstOrDefault<string>(s => args[i].Contains(s));
+            for (int i = 0; i < args.Length; i++)
+            {
+                string sKeyResult;
+                string[] keys = new string[] { "-login=", "-pass=" };
+                sKeyResult = null;
+                sKeyResult = keys.FirstOrDefault<string>(s => args[i].Contains(s));
 
                 switch (sKeyResult)
                 {
                     case "-login=":
                         login = args[i].Substring(args[i].IndexOf("-login=") + 7);
+
                         break;
                     case "-pass=":
                         pass = args[i].Substring(args[i].IndexOf("-pass=") + 6);
                         break;
                 }
             }
-
+            //Console.WriteLine(login);
+           // Console.WriteLine(pass);
             //вход в профиль
             //Console.ReadLine();
             this.openReg(login, pass);
@@ -106,7 +113,7 @@ namespace First
             //адрес письма
             wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("//*[@id='message-to-field']")));
             ele = driver.FindElement(By.XPath("//*[@id='message-to-field']"));
-            ele.SendKeys("chepurovova@yandex.ru");
+            ele.SendKeys("flayger@yandex.ru");
 
             //название письма
             ele = driver.FindElement(By.XPath("//*[@id='mail-app-component']/div/div/div[1]/div[3]/div/div/input"));
@@ -141,10 +148,13 @@ namespace First
             
             //прикрепить файл
             ele = driver.FindElement(By.XPath("//input[@title='Прикрепить файлы']"));
-            ele.SendKeys(Environment.CurrentDirectory + "/Resources/text.docx");
+
+            ele.SendKeys(Path.GetDirectoryName(System.AppDomain.CurrentDomain.BaseDirectory) + @"\Resources\text.docx");
+                //Environment.CurrentDirectory + @"\Resources\text.docx");
 
             //вставить картинку через ctrl+v
-            Clipboard.SetImage(System.Drawing.Image.FromFile(@"../../resources/logo.png"));
+            Clipboard.SetImage(System.Drawing.Image.FromFile(Path.GetDirectoryName(System.AppDomain.CurrentDomain.BaseDirectory) + @"\Resources\logo.png"));
+            
             ele = driver.FindElement(By.XPath("//*[@id='editor-container']/div[1]"));
             ele.SendKeys(OpenQA.Selenium.Keys.Enter);
             ele.SendKeys(OpenQA.Selenium.Keys.Control + "v");
@@ -153,6 +163,7 @@ namespace First
             ele.SendKeys(OpenQA.Selenium.Keys.Enter);
             ele.SendKeys("от меня, Фёдорова Артёма");
 
+            //System.Threading.Thread.Sleep(5);
             //подождать загрузки файла
             wait.Until(ExpectedConditions.ElementIsVisible(By.XPath("//*[@title='text.docx']")));
             //отправить
@@ -168,31 +179,39 @@ namespace First
         [STAThreadAttribute]
         public static void Main(string[] args)
         {
+            foreach (string s in args)
+                Console.WriteLine(s);
             FirstTestCase test = new FirstTestCase();
             try
-            {
-                test.driver = new ChromeDriver(@"../../resources/");
+            {   //@"../../resources/"
+                string _filePath = Path.GetDirectoryName(System.AppDomain.CurrentDomain.BaseDirectory);
+                _filePath += @"\resources\";
+                test.driver = new ChromeDriver(_filePath);
                 test.driver.Manage().Window.Maximize();
                 test.BeforeTest(args);
                 test.Testing();
-
-                test.driver.Close();
-                test.driver.Quit();
+                
             }
             catch (Exception e)
             {
-                string timestamp = DateTime.Now.ToString("yyyy-MM-dd HH-mm-ss");
-                test.image = ((ITakesScreenshot)test.driver).GetScreenshot();
-                test.image.SaveAsFile(@"../../temp/screenshot_" + timestamp + ".png");
-
-                String PageSource = test.driver.PageSource;
-                System.IO.File.WriteAllText(@"../../temp/html/" + timestamp + "filename.html", PageSource);
-
-                test.driver.Close();
-                test.driver.Quit();
                 if (e.Source != null)
                     Console.WriteLine(e);
-                Console.ReadLine();
+                
+                string timestamp = DateTime.Now.ToString("yyyy-MM-dd HH-mm-ss");
+                test.image = ((ITakesScreenshot)test.driver).GetScreenshot();
+                string _filePath = Path.GetDirectoryName(System.AppDomain.CurrentDomain.BaseDirectory);
+                _filePath = Directory.GetParent(_filePath).FullName;
+                _filePath = Directory.GetParent(_filePath).FullName;
+                test.image.SaveAsFile(_filePath + @"\temp\screenshot_" + timestamp + ".png");
+
+                String PageSource = test.driver.PageSource;
+                System.IO.File.WriteAllText(_filePath + @"\temp\html\" + timestamp + "filename.html", PageSource);
+
+            }
+            finally
+            {
+                test.driver.Close();
+                test.driver.Quit();
             }
 
 
