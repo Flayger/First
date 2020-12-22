@@ -7,7 +7,7 @@ using System.Windows.Forms;
 using System.IO;
 
 namespace First
-{
+{//"c:\Users\Flayger\Documents\Visual Studio 2015\Projects\First\First\bin\Debug\First.exe" -login=arthura635@yahoo.com -pass=21SDF4535146
     class FirstTestCase
     {
         //создание драйвера для запуска браузера, элемента страницы, логин-пароль, изображение при ошибке, ожидание
@@ -17,12 +17,13 @@ namespace First
         string pass;
         Screenshot image;
         WebDriverWait wait;
+        bool error;
 
         public void BeforeTest(string[] args)
         {
             //через параметры задается логин и пароль, без параметров запускается стандартный
-            if(args!=null)
-            {
+            if((args != null && args.Length != 0))
+                {
                 login = null;
                 pass = null;
             }
@@ -47,10 +48,8 @@ namespace First
                         break;
                 }
             }
-            //Console.WriteLine(login);
-           // Console.WriteLine(pass);
+            Console.WriteLine("логин пароль определен");
             //вход в профиль
-            //Console.ReadLine();
             this.openReg(login, pass);
         }
 
@@ -58,31 +57,52 @@ namespace First
         {
             //открыть yahoo
             driver.Url = "https://mail.yahoo.com/";
+            Console.WriteLine("переход на ссылку");
+            
+            
 
             //нажать sign in
             ele = driver.FindElement(By.PartialLinkText("Sign in"));
             ele.Click();
-            wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
+            wait = new WebDriverWait(driver, TimeSpan.FromSeconds(30));
+            Console.WriteLine("войти нажато");
 
             //ввод логина
             wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("//*[@id='login-username']")));
             ele = driver.FindElement(By.XPath("//*[@id='login-username']"));
             ele.SendKeys(login);
+            Console.WriteLine("логин введен");
 
             //далее
-            wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("//*[@id='login-signin']")));
+            
             ele = driver.FindElement(By.XPath("//*[@id='login-signin']"));
             ele.Click();
+            Console.WriteLine("логин, далее");
 
             //ввод пароля
             wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("//*[@id='login-passwd']")));
             ele = driver.FindElement(By.XPath("//*[@id='login-passwd']"));
             ele.SendKeys(pass);
+            Console.WriteLine("пароль введен");
 
+            string a = driver.Url;
             //далее
-            wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("//*[@id='login-signin']")));
+            
             ele = driver.FindElement(By.XPath("//*[@id='login-signin']"));
             ele.Click();
+            
+            
+            error = wait.Until((d) =>
+            {
+                if (d.Url != a)
+                { Console.WriteLine("Проверка: вход выполнен"); return true; }
+                return false;
+            });
+            if (error == false)
+            {
+                throw new Exception("ОШИБКА вход не выполнен");
+            }
+
 
         }
 
@@ -94,37 +114,42 @@ namespace First
 
         public void SendLetter()
         {
-            wait = new WebDriverWait(driver, TimeSpan.FromSeconds(50));
+            wait = new WebDriverWait(driver, TimeSpan.FromSeconds(30));
             //нажимаем написать, чтобы написать письмо
             wait.Until(ExpectedConditions.ElementToBeClickable(By.PartialLinkText("Написать")));
             ele = driver.FindElement(By.PartialLinkText("Написать"));
             ele.Click();
+            Console.WriteLine("письмо начато");
 
-
+            
             string a = "https://mail.yahoo.com/d/compose/";
             //ожидание, пока URL страницы поменяется, потому что Yahoo сбрасывает все поля, если дает ID письму
-            wait.Until((d) =>
+            error = wait.Until((d) =>
             {
                 if (d.Url != a)
-                { return true; }
+                { Console.WriteLine("Проверка: id письма присвоен"); return true; }
                 return false;
             });
+            if(error==false)
+            {
+                throw new Exception("ID не происвоен");
+            }
 
             //адрес письма
             wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("//*[@id='message-to-field']")));
             ele = driver.FindElement(By.XPath("//*[@id='message-to-field']"));
             ele.SendKeys("flayger@yandex.ru");
+            Console.WriteLine("адрес письма добавлен");
 
             //название письма
-            ele = driver.FindElement(By.XPath("//*[@id='mail-app-component']/div/div/div[1]/div[3]/div/div/input"));
+            ele = driver.FindElement(By.XPath("//input[@data-test-id='compose-subject']"));
+                //"//*[@id='mail-app-component']/div/div/div[1]/div[3]/div/div/input"));
             ele.SendKeys("AVTOTEST");
+            Console.WriteLine("название письма добавлено");
 
             //вставка текста и ссылки на репозиторий
-            ele = driver.FindElement(By.XPath("//*[@id='editor-container']/div[1]"));
-            string text = "Привет, Вова! Надеюсь, у тебя будет свободное время и желание проверить мою работу, Спасибо!" +
-            "запуск через командную строку - переходим в каталог с экзешником, "
-            +"@'c:/Users/Flayger/Documents/Visual Studio 2015/Projects/First/First/bin/Debug/First.exe' -login=arthura635@yahoo.com -pass=21SDF4535146";
-            ele.SendKeys(text);
+            ele = driver.FindElement(By.XPath("//*[@role='textbox']"));
+            string text;
 
             text = "Тест(от англ.test «испытание, проверка») или испытание" +
                 "— способ изучения глубинных процессов деятельности системы, посредством" +
@@ -134,6 +159,7 @@ namespace First
             ele.SendKeys("https://github.com/Flayger/First");
 
             ele.SendKeys(OpenQA.Selenium.Keys.Enter);
+            Console.WriteLine("текст добавлен");
 
             //гиперссылка
             ele = driver.FindElement(By.XPath("//*[@title='Ссылка']"));
@@ -145,31 +171,58 @@ namespace First
             ele = driver.FindElement(By.XPath("//*[@value='http://']"));
             ele.SendKeys("mail.yahoo.com/");
             ele.SendKeys(OpenQA.Selenium.Keys.Enter);
-            
+            Console.WriteLine("гиперссылка добавлена");
+
             //прикрепить файл
             ele = driver.FindElement(By.XPath("//input[@title='Прикрепить файлы']"));
 
             ele.SendKeys(Path.GetDirectoryName(System.AppDomain.CurrentDomain.BaseDirectory) + @"\Resources\text.docx");
-                //Environment.CurrentDirectory + @"\Resources\text.docx");
-
+            //Environment.CurrentDirectory + @"\Resources\text.docx");
+            Console.WriteLine("файл добавлен");
             //вставить картинку через ctrl+v
             Clipboard.SetImage(System.Drawing.Image.FromFile(Path.GetDirectoryName(System.AppDomain.CurrentDomain.BaseDirectory) + @"\Resources\logo.png"));
-            
-            ele = driver.FindElement(By.XPath("//*[@id='editor-container']/div[1]"));
+
+            ele = driver.FindElement(By.XPath("//*[@role='textbox']"));
+                //aria-label='Тело сообщения']"));
+                //"//*[@id='editor-container']/div[1]"));
             ele.SendKeys(OpenQA.Selenium.Keys.Enter);
             ele.SendKeys(OpenQA.Selenium.Keys.Control + "v");
+            Console.WriteLine("картинка добавлена");
 
             //подпись
             ele.SendKeys(OpenQA.Selenium.Keys.Enter);
             ele.SendKeys("от меня, Фёдорова Артёма");
+            Console.WriteLine("подпись добавлена");
 
-            //System.Threading.Thread.Sleep(5);
+            a = driver.Url;
+
             //подождать загрузки файла
-            wait.Until(ExpectedConditions.ElementIsVisible(By.XPath("//*[@title='text.docx']")));
+            if(wait.Until(ExpectedConditions.ElementIsVisible(By.XPath("//*[@title='13215text.docx']")))!=null)
+            {
+                Console.WriteLine("Проверка: файл загружен");
+            }
+            else
+            {
+                throw new Exception("ОШИБКА файл не загружен");
+            }
+            
             //отправить
-            ele = driver.FindElement(By.CssSelector("#mail-app-component > div.p_a.R_0.T_0.L_0.B_0.D_F > div > div.em_N.D_F.ek_BB.p_R.o_h > div:nth-child(2) > div > button"));
+            ele = driver.FindElement(By.XPath("//*[@title='Отправить это сообщение']"));
+            //By.CssSelector("#mail-app-component > div.p_a.R_0.T_0.L_0.B_0.D_F > div > div.em_N.D_F.ek_BB.p_R.o_h > div:nth-child(2) > div > button"));
             ele.Click();
-
+            
+            //ожидание, пока URL страницы поменяется, потому что Yahoo сбрасывает все поля, если дает ID письму
+            error = wait.Until((d) =>
+            {
+                if (d.Url != a)
+                { Console.WriteLine("Проверка: отправлено"); return true; }
+                //Console.WriteLine("Проверка: ошибка отправления");
+                return false;
+            });
+            if (error == false)
+            {
+                throw new Exception("ОШИБКА письмо не отправлено");
+            }
         }
 
 
@@ -207,11 +260,13 @@ namespace First
                 String PageSource = test.driver.PageSource;
                 System.IO.File.WriteAllText(_filePath + @"\temp\html\" + timestamp + "filename.html", PageSource);
 
+                Console.ReadLine();
             }
             finally
             {
                 test.driver.Close();
                 test.driver.Quit();
+                Console.ReadLine();
             }
 
 
